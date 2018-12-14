@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Publishers</title>
+            <link  rel="stylesheet" href="style.css"/>
+        </head>
+<body>
+<h1>Library Management System</h1>
+
+<div id="buttons">
+    <a class="btn" href="index.html">Go Back</a>
+</div>
+<div class="table">
+    <table id="table" cellpadding="0" cellspacing="0">
+        <thead>
+        <tr>
+            <th>Number</th>
+            <th>Publisher Name</th>
+            <th>Books Published</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="publishersList">
+
+        </tbody>
+    </table>
+</div>
+<script src="script.js"></script>
+<script>
+    let publishers=getPublishers();
+    let bookCount=0;
+    let publishersList = document.getElementById("publishersList");
+
+    function getPublishers() {
+        let arr={};
+        for(let book in books){
+            let bookObj = books[book];
+            if(!arr[bookObj.publisher])
+                arr[bookObj.publisher]=[];
+            arr[bookObj.publisher].push(book);
+        }
+        return arr;
+    }
+    function showPublishers() {
+        publishersList.innerHTML="";
+        for(let author in publishers){
+            addPublisher(author,publishers[author].length);
+        }
+    }
+    function addPublisher(name,books) {
+        let html = `<tr data-name="${name}">  <td>${++bookCount}</td>
+            <td>${name}</td>
+            <td>${books}</td>
+            <td>
+                <a class="btn btn-icon" href="#" onclick="deletePublisherInList('${name}')">Delete</a>
+            </td>
+        </tr>`;
+        publishersList.innerHTML+=html;
+    }
+    function deletePublisherInList(name) {
+        publishersList.querySelector(`tr[data-name="${name}"]`).remove();
+        let rows = publishersList.children;
+        let i=1;
+        for(let row in rows){
+            if(publishersList.children[row].children)
+                publishersList.children[row].children[0].innerText = i;
+            i++;
+        }
+        bookCount = rows.length;
+        for(let i in publishers[name])
+            delete books[publishers[name][i]];
+        saveBooks();
+    }
+
+    showPublishers();
+
+</script>
+</body>
+</html>

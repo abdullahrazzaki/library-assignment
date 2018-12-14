@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1>Library Management System</h1>
+
+<div id="buttons">
+    <a class="btn" href="authors.html">Authors</a>
+    <a class="btn" href="publishers.html">Publishers</a>
+</div>
+<div class="table">
+    <table id="table" cellpadding="0" cellspacing="0">
+        <thead>
+        <tr>
+            <th>Number</th>
+            <th>Book Name</th>
+            <th>Author</th>
+            <th>Publisher</th>
+            <th>Published Date</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="booksList">
+
+        </tbody>
+    </table>
+</div>
+<div class="btn" onclick="showDialog()">Add Book</div>
+<div id="dialog">
+    <div class="dialog" id="dialogBox">
+        <div class="close btn" onclick="closeDialog()" style="position: absolute;top:10px;right: 10px;">X</div>
+        <h2 id="dialogTitle">Add Book</h2>
+        <form id="addBook" onsubmit = "bookSubmitted(); return false;">
+            <div class="form-input">
+            <input type="text" name="name" required placeholder="Book Name" pattern="[A-Za-z -]{3,}"/>
+            </div>
+            <div class="form-input">
+                <input type="text" name="author" required placeholder="Author Name" pattern="[A-Za-z -]{3,}"/>
+            </div>
+                <div class="form-input">
+                    <input type="text" name="publisher" required placeholder="Publisher Name" pattern="[A-Za-z -]{3,}"/>
+                </div>
+            <div class="form-input">
+                        <input type="date" name="date" required placeholder="Publisher Date"/>
+            </div>
+                <button class="btn" type="submit">Submit</button>
+        </form>
+
+    </div>
+</div>
+<script src="script.js"></script>
+<script>
+
+    const  bookList = document.getElementById("booksList");
+    const bookForm = document.getElementById("addBook");
+    let updatingBook = false;
+    let currentBook = undefined;
+    let bookCount=0;
+    let dialogOpen = false;
+    function showBooks() {
+        bookList.innerHTML="";
+        for(let book in books){
+            addBook(book,books[book]);
+        }
+    }
+    function addBook(name,book) {
+        let html = `<tr data-name="${name}">  <td>${++bookCount}</td>
+            <td>${name}</td>
+            <td>${book.author}</td>
+            <td>${book.publisher}</td>
+            <td>${book.date}</td>
+            <td>
+                <a class="btn btn-icon" href="#" onclick="updateBook('${name}')">Update</a>
+                <a class="btn btn-icon" href="#" onclick="deleteBook('${name}')">Delete</a>
+            </td>
+        </tr>`;
+        bookList.innerHTML+=html;
+    }
+    function deleteBookInList(name) {
+        bookList.querySelector(`tr[data-name="${name}"]`).remove();
+        let rows = bookList.children;
+        let i=1;
+        for(let row in rows){
+            bookList.children[row].children[0].innerText = i;
+            i++;
+        }
+        bookCount = rows.length;
+    }
+    function updateBookInList(oldName,name,book) {
+        let row = bookList.querySelector(`tr[data-name="${oldName}"]`);
+        let n = row.children[0].innerText;
+        console.log(row);
+        row.innerHTML = `<tr data-name="${name}">
+            <td>${n}</td>
+            <td>${name}</td>
+            <td>${book.author}</td>
+            <td>${book.publisher}</td>
+            <td>${book.date}</td>
+            <td>
+                <a class="btn btn-icon" href="#" onclick="updateBook('${name}')">Update</a>
+                <a class="btn btn-icon" href="#" onclick="deleteBook('${name}')">Delete</a>
+            </td>
+        </tr>`;
+    }
+
+    function  bookSubmitted() {
+        console.log(bookForm);
+        let name = toTitleCase(bookForm.name.value);
+        let author = toTitleCase(bookForm.author.value);
+        let publisher = toTitleCase(bookForm.publisher.value);
+        let date = bookForm.date.value;
+        let newBook = new Book(author,publisher,date);
+        console.log(updatingBook,newBook);
+        if(!updatingBook){
+            if(books[name]){
+                alert("A book with the same name already exists");
+            }
+            else{
+                books[name] = newBook;
+                saveBooks();
+                addBook(name,newBook);
+            }
+        }
+        else{
+            delete books[currentBook];
+            books[name] = newBook;
+            saveBooks();
+            updateBookInList(currentBook,name,newBook);
+            //deleted
+        }
+        closeDialog();
+    }
+    function showDialog() {
+        document.getElementById("dialog").style.display="flex";
+        if(updatingBook){
+            let book = books[currentBook];
+            bookForm.name.value = currentBook;
+            bookForm.author.value = book.author;
+            bookForm.publisher.value = book.publisher;
+            bookForm.date.value = book.date;
+            document.getElementById("dialogTitle").innerText = "Update Book";
+        }else {
+            bookForm.reset();
+
+            document.getElementById("dialogTitle").innerText = "Add Book";
+        }
+        bookForm.name.focus();
+    }
+    function closeDialog() {
+        dialogOpen = false;
+        updatingBook = false;
+        currentBook = undefined;
+        document.getElementById("dialog").style.display="none";
+    }
+    function updateBook(name) {
+        updatingBook = true;
+        currentBook = name;
+        showDialog();
+    }
+    function deleteBook(name) {
+        delete books[name];
+        saveBooks();
+        deleteBookInList(name);
+    }
+
+    document.getElementById("dialog").addEventListener("click", (evt) => {
+        const dialogElement = document.getElementById("dialogBox");
+        let targetElement = evt.target;
+
+        do {
+            if (targetElement === dialogElement) {
+                return;
+            }
+            targetElement = targetElement.parentNode;
+        } while (targetElement);
+        closeDialog();
+    });
+    function toTitleCase(str) {
+        let words = str.split(" ");
+        let result = "";
+        for(let word in words){
+            result+=words[word][0].toUpperCase()+words[word].substr(1)+" ";
+        }
+        return result.substr(0,result.length-1);
+    }
+    showBooks();
+</script>
+</body>
+</html>

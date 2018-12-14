@@ -1,0 +1,67 @@
+body{
+    background: #eee;
+}
+h1{
+    text-align: center;
+    color: #428BCA;
+}
+.btn{
+    padding: 8px 16px;
+    background: #428bca;
+    color: white;
+    display: inline-block;
+    cursor: pointer;
+    border: 0;
+}
+.table{
+    overflow-x: auto;
+    margin: 8px 0;
+}
+input{
+    background: none;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 4px 8px;
+    width: 70%;
+}
+.form-input{
+    margin: 8px 0;
+}
+thead{
+    background: #428BCA;
+    color: #fff;
+}
+thead th{
+    padding: 4px 8px;
+    border: 1px solid #fff;
+    border-collapse: collapse;
+}
+
+tbody td{
+    padding: 5px 8px;
+    border: 1px solid #000;
+}
+tr:nth-child(even) {
+    background-color: #ccc
+}
+#dialog{
+    position: absolute;
+    left:0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    justify-content: center;
+    text-align: center;
+    background: rgba(0,0,0,0.6);
+}
+.dialog{
+    background: #fff;
+    display: inline-block;
+    margin: auto;
+    padding: 16px;
+    position: relative;
+}
+a,a:visited {
+    text-decoration: none;
+}

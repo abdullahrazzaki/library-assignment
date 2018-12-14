@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authors</title>
+    <link  rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<h1>Library Management System</h1>
+
+<div id="buttons">
+    <a class="btn" href="index.html">Go Back</a>
+</div>
+<div class="table">
+    <table id="table" cellpadding="0" cellspacing="0">
+        <thead>
+        <tr>
+            <th>Number</th>
+            <th>Author Name</th>
+            <th>Books Written</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="authorsList">
+
+        </tbody>
+    </table>
+</div>
+<script src="script.js"></script>
+<script>
+    let authors=getAuthors();
+    let bookCount=0;
+    let authorList = document.getElementById("authorsList");
+
+    function getAuthors() {
+        let arr={};
+        for(let book in books){
+            let bookObj = books[book];
+            if(!arr[bookObj.author])
+                arr[bookObj.author]=[];
+            arr[bookObj.author].push(book);
+        }
+        return arr;
+    }
+    function showAuthors() {
+        authorList.innerHTML="";
+        for(let author in authors){
+            addAuthor(author,authors[author].length);
+        }
+    }
+    function addAuthor(name,books) {
+        let html = `<tr data-name="${name}">  <td>${++bookCount}</td>
+            <td>${name}</td>
+            <td>${books}</td>
+            <td>
+                <a class="btn btn-icon" href="#" onclick="deleteAuthorInList('${name}')">Delete</a>
+            </td>
+        </tr>`;
+        authorList.innerHTML+=html;
+    }
+    function deleteAuthorInList(name) {
+        authorList.querySelector(`tr[data-name="${name}"]`).remove();
+        let rows = authorList.children;
+        let i=1;
+        for(let row in rows){
+            if(authorList.children[row].children)
+                authorList.children[row].children[0].innerText = i;
+            i++;
+        }
+        bookCount = rows.length;
+        for(let i in authors[name])
+            delete books[authors[name][i]];
+        saveBooks();
+    }
+
+    showAuthors();
+
+</script>
+</body>
+</html>
